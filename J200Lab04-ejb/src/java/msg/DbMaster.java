@@ -79,6 +79,22 @@ public class DbMaster implements DbMasterLocal {
     
     
     @Override
+    public ArrayList<Integer> getNumbers() {
+        ArrayList<Integer> numbers = new ArrayList<>();
+        try {
+            conn = getConnection();
+            ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM numbers");
+            while(rs.next()){
+                numbers.add(rs.getInt(1));
+            }
+        } catch (SQLException ex) {
+            //Logger.getLogger(DbMaster.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Ошибка извлечения списка чисел");
+        }
+        return numbers;
+    }
+    
+    @Override
     public int cleanMessages() {
         try {
             conn = DriverManager.getConnection("jdbc:derby://localhost:1527/j200lab04", "test", "test");
@@ -129,6 +145,8 @@ public class DbMaster implements DbMasterLocal {
 //    public static void main(String[] args) {
 //        new DbMaster().writeMessage("message");
 //    }
+
+
 
 
 
