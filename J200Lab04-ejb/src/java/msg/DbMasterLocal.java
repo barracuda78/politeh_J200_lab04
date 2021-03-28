@@ -26,5 +26,7 @@ public interface DbMasterLocal {
     int cleanMessages();
 
     int cleanNumbers();
+
+    ArrayList<Integer> getNumbers();
     
 }

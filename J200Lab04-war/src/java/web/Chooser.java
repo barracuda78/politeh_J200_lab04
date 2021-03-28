@@ -49,6 +49,8 @@ public class Chooser extends HttpServlet {
         }else if(request.getParameter("sum") != null){
 
             Integer sum = dbMaster.getTotal();
+            ArrayList<Integer> numbers = dbMaster.getNumbers();
+            request.setAttribute("numbers", numbers);
             request.setAttribute("sum", sum);
             request.getRequestDispatcher("index.jsp").forward(request, response);
 
@@ -78,6 +80,10 @@ public class Chooser extends HttpServlet {
         }else if(request.getParameter("cleanIntegers") != null){
             dbMaster.cleanNumbers();
             request.setAttribute("integerCleaned", "All numbers removed from DB");
+            request.getRequestDispatcher("index.jsp").forward(request, response);
+        }else if(request.getParameter("numbers") != null){
+            ArrayList<Integer> numbers = dbMaster.getNumbers();
+            request.setAttribute("numbersList", numbers);
             request.getRequestDispatcher("index.jsp").forward(request, response);
         }
         
