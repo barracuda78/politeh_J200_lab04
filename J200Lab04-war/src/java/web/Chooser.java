@@ -37,32 +37,47 @@ public class Chooser extends HttpServlet {
     @Resource(lookup="jms/StringIntegerQ")
     private Queue siq;
     
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
+
         response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
         
         if(request.getParameter("list") != null){
             ArrayList<String> messages = dbMaster.getMessageList();
             request.setAttribute("list", messages);
             request.getRequestDispatcher("index.jsp").forward(request, response);
         }else if(request.getParameter("sum") != null){
+
             Integer sum = dbMaster.getTotal();
             request.setAttribute("sum", sum);
             request.getRequestDispatcher("index.jsp").forward(request, response);
 
-        }else{
+        }else if(request.getParameter("send") != null){
             String info = request.getParameter("info");
-            int number = 0;
+            int number;
             try{
                 number = Integer.parseInt(info);
                 System.out.println("Из запроса извлечено число " + number);
                 sendObjectMessage(number);
+                
+                dbMaster.writeInteger(number);//////////////////////////////////////////////////------> Удалить. Это для теста записи в бд из сервлета без JMS
+           
             }catch(NumberFormatException e){
                 System.out.println("в запросе текст " + info);
                 sendTextMessage(info);
+                
+                
+                dbMaster.writeMessage(info); //////////////////////////////////////////////////------> Удалить. Это для теста записи в бд из сервлета без JMS
             }
-            request.setAttribute("msg", "Сообщение " + info + "отправлено");
+            request.setAttribute("msg", "Сообщение " + info + " отправлено");
+            request.getRequestDispatcher("index.jsp").forward(request, response);
+        }else if(request.getParameter("cleanMessages") != null){
+            dbMaster.cleanMessages();
+            request.setAttribute("stringCleaned", "All messages removed from DB.");
+            request.getRequestDispatcher("index.jsp").forward(request, response);
+        }else if(request.getParameter("cleanIntegers") != null){
+            dbMaster.cleanNumbers();
+            request.setAttribute("integerCleaned", "All numbers removed from DB");
             request.getRequestDispatcher("index.jsp").forward(request, response);
         }
         
@@ -80,40 +95,17 @@ public class Chooser extends HttpServlet {
 //        }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
+
     @Override
     public String getServletInfo() {
         return "Short description";
@@ -130,7 +122,6 @@ public class Chooser extends HttpServlet {
             //Logger.getLogger(Chooser.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("Ошибка отправки числового сообщения");
         }
-    
     }
 
     private void sendTextMessage(String info) {
