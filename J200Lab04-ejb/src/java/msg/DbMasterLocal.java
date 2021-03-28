@@ -22,5 +22,9 @@ public interface DbMasterLocal {
     ArrayList<String> getMessageList();
 
     int getTotal();
+
+    int cleanMessages();
+
+    int cleanNumbers();
     
 }

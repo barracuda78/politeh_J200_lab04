@@ -1,6 +1,7 @@
-
 package msg;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
@@ -14,26 +15,27 @@ import javax.jms.TextMessage;
     ,
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
-public class StringConsumer implements MessageListener {
+public class StringConsumer2 implements MessageListener {
     
     @EJB
     private DbMaster dbMaster;
     
-    public StringConsumer() {
+    public StringConsumer2() {
     }
     
     @Override
     public void onMessage(Message message) {
         if(message instanceof TextMessage){
+            TextMessage tm = (TextMessage)message;
             try {
-                String mg = ((TextMessage) message).getText();
-                dbMaster.writeMessage(mg);
+                dbMaster.writeMessage(tm.getText());
+                System.out.println("StringConsumer2 - текстовое сообщение  " + tm +  " записано в базу");
             } catch (JMSException ex) {
-                //Logger.getLogger(StringConsumer.class.getName()).log(Level.SEVERE, null, ex);
-                System.out.println("------Ошибка в методе onMessage бина StringConsumer");
+                System.out.println("StringConsumer2 - ошибка в методе getText()");
             }
-        }else{
-            System.out.println("------StringConsumer получил левое сообщение");
+        }
+        else{
+            System.out.println("StringConsumer2 ПОЛУЧИЛ НЕ ТЕКСТОВОЕ СООБЩЕНИЕ");
         }
     }
 }
