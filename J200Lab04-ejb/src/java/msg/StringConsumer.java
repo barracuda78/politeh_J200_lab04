@@ -17,7 +17,7 @@ import javax.jms.TextMessage;
 public class StringConsumer implements MessageListener {
     
     @EJB
-    private DbMaster dbMaster;
+    private DbMasterLocal dbMaster;
     
     public StringConsumer() {
     }

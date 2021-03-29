@@ -1,8 +1,5 @@
-
 package msg;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
@@ -11,16 +8,11 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+
 @MessageDriven(activationConfig = {
-    @ActivationConfigProperty(propertyName = "clientId", propertyValue = "jms/StringIntegerQ")
+    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "jms/StringIntegerQ")
     ,
-        @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "jms/StringIntegerQ")
-    ,
-        @ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable")
-    ,
-        @ActivationConfigProperty(propertyName = "subscriptionName", propertyValue = "jms/StringIntegerQ")
-    ,
-        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic")
+        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
 public class IntegerConsumer implements MessageListener {
     
