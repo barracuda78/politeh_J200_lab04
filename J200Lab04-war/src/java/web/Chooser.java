@@ -36,9 +36,11 @@ public class Chooser extends HttpServlet {
     
     @Resource(lookup="jms/StringIntegerQ")
     private Queue siq;
-    
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
 
+    
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
         
@@ -62,14 +64,13 @@ public class Chooser extends HttpServlet {
                 System.out.println("Из запроса извлечено число " + number);
                 sendObjectMessage(number);
                 
-                dbMaster.writeInteger(number);//////////////////////////////////////////////////------> Удалить. Это для теста записи в бд из сервлета без JMS
+                //dbMaster.writeInteger(number);//////////////////////////////////////////////////------> Удалить. Это для теста записи в бд из сервлета без JMS
            
             }catch(NumberFormatException e){
                 System.out.println("в запросе текст " + info);
                 sendTextMessage(info);
-                
-                
-                dbMaster.writeMessage(info); //////////////////////////////////////////////////------> Удалить. Это для теста записи в бд из сервлета без JMS
+
+                //dbMaster.writeMessage(info); //////////////////////////////////////////////////------> Удалить. Это для теста записи в бд из сервлета без JMS
             }
             request.setAttribute("msg", "Сообщение " + info + " отправлено");
             request.getRequestDispatcher("index.jsp").forward(request, response);
@@ -86,43 +87,25 @@ public class Chooser extends HttpServlet {
             request.setAttribute("numbersList", numbers);
             request.getRequestDispatcher("index.jsp").forward(request, response);
         }
-        
-//        try (PrintWriter out = response.getWriter()) {
-//            /* TODO output your page here. You may use following sample code. */
-//            out.println("<!DOCTYPE html>");
-//            out.println("<html>");
-//            out.println("<head>");
-//            out.println("<title>Servlet Chooser</title>");            
-//            out.println("</head>");
-//            out.println("<body>");
-//            out.println("<h1>Servlet Chooser at " + request.getContextPath() + "</h1>");
-//            out.println("</body>");
-//            out.println("</html>");
-//        }
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        processRequest(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        processRequest(request, response);
+
     }
 
 
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 
     private void sendObjectMessage(int number) {
         try {
             QueueConnection con = factory.createQueueConnection();
             QueueSession ses = con.createQueueSession(true, 0);
             QueueSender sender = ses.createSender(siq);
-            ObjectMessage tm = ses.createObjectMessage(new Integer(number));
+            ObjectMessage tm = ses.createObjectMessage(number);
             sender.send(tm);
         } catch (JMSException ex) {
             //Logger.getLogger(Chooser.class.getName()).log(Level.SEVERE, null, ex);

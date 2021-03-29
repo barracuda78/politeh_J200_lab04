@@ -23,7 +23,7 @@ public class DbMaster implements DbMasterLocal {
         try {
             conn = getConnection();
             Statement stmt = conn.createStatement();
-            stmt.executeUpdate("INSERT INTO MESSAGES VALUES ('"+ message +"')");
+            stmt.executeUpdate("INSERT INTO MESSAGES VALUES ('" + message + "')");
             //stmt.executeUpdate("INSERT INTO MESSAGES VALUES ('просто захардкодил сообщение')");
         } catch (SQLException ex) {
             //Logger.getLogger(DbMaster.class.getName()).log(Level.SEVERE, null, ex);
